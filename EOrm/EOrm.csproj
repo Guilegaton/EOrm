@@ -88,6 +88,7 @@
     <Compile Include="DBModels\Wharehouse.cs">
       <DependentUpon>ShipmentDbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
