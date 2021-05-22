@@ -145,7 +145,7 @@ namespace EOrm.Repositories.ADO
             var result = ParseReader(reader);
             reader.Close();
 
-            return result.First();
+            return result.FirstOrDefault();
         }
 
         public void Update(TModel model)
