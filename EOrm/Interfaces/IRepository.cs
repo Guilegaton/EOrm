@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace EOrm.Interfaces
 {
-    public interface IRepository<TModel> where TModel : class, new()
+    public interface IRepository<TModel> where TModel : class, IEntity, new()
     {
         void CommitChanges();
 
@@ -10,12 +12,14 @@ namespace EOrm.Interfaces
 
         void DeleteById(int id);
 
+        void Delete(TModel model);
+
         void DiscardChandes();
 
         IEnumerable<TModel> GetAll();
 
-        TModel GetById(int id);
+        TModel GetByField(Dictionary<Expression<Func<TModel, object>>, object> dict);
 
-        void UpdateById(TModel model);
+        void Update(TModel model);
     }
 }
