@@ -9,29 +9,53 @@
 
 namespace EOrm.DBModels
 {
+    using EOrm.Attributes;
+    using EOrm.Interfaces;
     using System;
     using System.Collections.Generic;
     
-    public partial class Truck
+    public partial class Truck : IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Truck()
         {
-            this.Shipments = new HashSet<Shipment>();
             this.Drivers = new HashSet<Driver>();
         }
     
+        [PrimaryKey]
+        [ColumnProperty]
         public int TruckId { get; set; }
+        [ColumnProperty]
         public string BrandName { get; set; }
+        [ColumnProperty]
         public string RegistrationNumber { get; set; }
+        [ColumnProperty]
         public int Year { get; set; }
+        [ColumnProperty]
         public decimal Payload { get; set; }
+        [ColumnProperty]
         public decimal FuelConsumption { get; set; }
+        [ColumnProperty]
         public decimal Volume { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Shipment> Shipments { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Driver> Drivers { get; set; }
+
+        public int Id => TruckId;
+
+        public string GetCreateCommand()
+        {
+            return $"INSERT INTO Truck(BrandName,RegistrationNumber,Year,Payload,FuelConsumption,Volume) VALUES ('{BrandName}', '{RegistrationNumber}', {Year}, {Payload}, {FuelConsumption}, {Volume});";
+        }
+
+        public string GetDeleteCommand()
+        {
+            return $"DELETE FROM Truck WHERE TruckId = {TruckId}";
+        }
+
+        public string GetUpdateCommand()
+        {
+            return $"UPDATE Truck SET BrandName='{BrandName}',RegistrationNumber='{RegistrationNumber}',Year={Year},Payload={Payload},FuelConsumption={FuelConsumption},Volume={Volume} WHERE TruckId={TruckId};";
+        }
     }
 }

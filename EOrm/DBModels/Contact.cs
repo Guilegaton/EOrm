@@ -9,26 +9,43 @@
 
 namespace EOrm.DBModels
 {
+    using EOrm.Attributes;
+    using EOrm.Interfaces;
     using System;
     using System.Collections.Generic;
     
-    public partial class Contact
+    public partial class Contact : IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Contact()
         {
-            this.RecipientCargoes = new HashSet<Cargo>();
-            this.CustomerCargoes = new HashSet<Cargo>();
         }
     
+        [PrimaryKey]
+        [ColumnProperty]
         public int ContactId { get; set; }
+        [ColumnProperty]
         public string FirstName { get; set; }
+        [ColumnProperty]
         public string LastName { get; set; }
+        [ColumnProperty]
         public string CellPhone { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Cargo> RecipientCargoes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Cargo> CustomerCargoes { get; set; }
+
+        public int Id => ContactId;
+
+        public string GetCreateCommand()
+        {
+            return $"INSERT INTO Contact(FirstName,LastName,CellPhone) VALUES ('{FirstName}', '{LastName}', '{CellPhone}');";
+        }
+
+        public string GetDeleteCommand()
+        {
+            return $"DELETE FROM Contact WHERE ContactId = {ContactId};";
+        }
+
+        public string GetUpdateCommand()
+        {
+            return $"UPDATE Contact SET FirstName='{FirstName}',LastName='{LastName}',CellPhone='{CellPhone}' WHERE ContactId={ContactId};";
+        }
     }
 }

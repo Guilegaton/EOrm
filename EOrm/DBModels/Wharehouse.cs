@@ -9,25 +9,41 @@
 
 namespace EOrm.DBModels
 {
+    using EOrm.Attributes;
+    using EOrm.Interfaces;
     using System;
     using System.Collections.Generic;
     
-    public partial class Wharehouse
+    public partial class Wharehouse : IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Wharehouse()
         {
-            this.StartPointRoutes = new HashSet<Route>();
-            this.EndPointRoutes = new HashSet<Route>();
         }
     
+        [PrimaryKey]
+        [ColumnProperty]
         public int WharehouseId { get; set; }
+        [ColumnProperty]
         public string City { get; set; }
+        [ColumnProperty]
         public string State { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Route> StartPointRoutes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Route> EndPointRoutes { get; set; }
+
+        public int Id => WharehouseId;
+
+        public string GetCreateCommand()
+        {
+            return $"INSERT INTO Wharehouse(City,State) VALUES ('{City}', '{State}');";
+        }
+
+        public string GetDeleteCommand()
+        {
+            return $"DELETE FROM Wharehouse WHERE WharehouseId = {WharehouseId}";
+        }
+
+        public string GetUpdateCommand()
+        {
+            return $"UPDATE Wharehouse SET City='{City}',State='{State}' WHERE WharehouseId={WharehouseId};";
+        }
     }
 }

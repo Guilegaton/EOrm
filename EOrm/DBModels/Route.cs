@@ -9,29 +9,47 @@
 
 namespace EOrm.DBModels
 {
+    using EOrm.Attributes;
+    using EOrm.Interfaces;
     using System;
     using System.Collections.Generic;
     
-    public partial class Route
+    public partial class Route : IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Route()
         {
-            this.Cargoes = new HashSet<Cargo>();
-            this.Shipments = new HashSet<Shipment>();
         }
-    
+
+        [PrimaryKey]
+        [ColumnProperty]
         public int RouteId { get; set; }
+        [ColumnProperty]
         public string Name { get; set; }
+        [ColumnProperty]
         public decimal Distance { get; set; }
+        [ColumnProperty]
         public int WharehouseStart { get; set; }
+        [ColumnProperty]
         public int WharehouseEnd { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Cargo> Cargoes { get; set; }
         public virtual Wharehouse StartPoint { get; set; }
         public virtual Wharehouse EndPoint { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Shipment> Shipments { get; set; }
+
+        public int Id => RouteId;
+
+        public string GetCreateCommand()
+        {
+            return $"INSERT INTO Route(Name,Distance,WharehouseStart,WharehouseEnd) VALUES ('{Name}', {Distance}, {WharehouseStart}, {WharehouseEnd});";
+        }
+
+        public string GetDeleteCommand()
+        {
+            return $"DELETE FROM Route WHERE RouteId = {RouteId}";
+        }
+
+        public string GetUpdateCommand()
+        {
+            return $"UPDATE Route SET Name='{Name}',Distance={Distance},WharehouseStart={WharehouseStart},WharehouseEnd={WharehouseEnd} WHERE RouteId={RouteId};";
+        }
     }
 }

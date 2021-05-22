@@ -9,26 +9,49 @@
 
 namespace EOrm.DBModels
 {
+    using EOrm.Attributes;
+    using EOrm.Interfaces;
     using System;
     using System.Collections.Generic;
-    
-    public partial class Driver
+    using System.Linq;
+
+    public partial class Driver : IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Driver()
         {
-            this.Shipments = new HashSet<Shipment>();
             this.Trucks = new HashSet<Truck>();
         }
     
+        [PrimaryKey]
+        [ColumnProperty]
         public int DriverId { get; set; }
+        [ColumnProperty]
         public string FirstName { get; set; }
+        [ColumnProperty]
         public string LastName { get; set; }
+        [ColumnProperty]
         public System.DateTime Birthdate { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Shipment> Shipments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Truck> Trucks { get; set; }
+        public ICollection<TruckDriver> TruckDrivers { get; set; }
+
+        public int Id => DriverId;
+
+        public string GetCreateCommand()
+        {
+            return $"INSERT INTO Driver(FirstName,LastName,Birthdate) VALUES ('{FirstName}', '{LastName}', '{Birthdate}');";
+        }
+
+        public string GetDeleteCommand()
+        {
+            return $"DELETE [TruckDriver] WHERE DriverId = {DriverId}; " +
+                $"DELETE FROM Driver WHERE DriverId = {DriverId};";
+        }
+
+        public string GetUpdateCommand()
+        {
+            return $"UPDATE Driver SET FirstName='{FirstName}',LastName='{LastName}',Birthdate='{Birthdate}' WHERE DriverId={DriverId};";
+        }
     }
 }
