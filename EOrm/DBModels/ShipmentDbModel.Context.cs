@@ -19,12 +19,11 @@ namespace EOrm.DBModels
             : base("name=ShipmentEntities")
         {
         }
-    
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            throw new UnintentionalCodeFirstException();
         }
-    
+
         public virtual DbSet<Cargo> Cargoes { get; set; }
         public virtual DbSet<Contact> Contacts { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
