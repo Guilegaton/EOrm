@@ -6,21 +6,30 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EOrm.Repositories.EF
 {
-    public class EFRepository<TModel> : IRepository<TModel> where TModel : class, IEntity, new()
+    public class EFRepository<TModel> : IRepository<TModel>, IDisposable where TModel : class, IEntity, new()
     {
-        private DbContextTransaction _transaction;
+        #region Private Fields
+
         private ShipmentEntities _context;
         private DbSet<TModel> _dbSet;
+        private DbContextTransaction _transaction;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public EFRepository()
         {
             _context = new ShipmentEntities();
             _dbSet = _context.Set<TModel>();
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void CommitChanges()
         {
@@ -70,6 +79,12 @@ namespace EOrm.Repositories.EF
             _transaction = null;
         }
 
+        public void Dispose()
+        {
+            _transaction.Rollback();
+            _context.Dispose();
+        }
+
         public IEnumerable<TModel> GetAll()
         {
             return _dbSet.ToArray();
@@ -93,10 +108,9 @@ namespace EOrm.Repositories.EF
             _context.SaveChanges();
         }
 
-        private void CreateTransaction()
-        {
-            _transaction = _context.Database.BeginTransaction();
-        }
+        #endregion Public Methods
+
+        #region Private Methods
 
         private string CreateGetCommand(Dictionary<Expression<Func<TModel, object>>, object> dict)
         {
@@ -131,6 +145,10 @@ namespace EOrm.Repositories.EF
             return result.ToString();
         }
 
+        private void CreateTransaction()
+        {
+            _transaction = _context.Database.BeginTransaction();
+        }
         private string GetContentForPropValue(KeyValuePair<Expression<Func<TModel, object>>, object> pair)
         {
             var propType = ((pair.Key.Body as UnaryExpression).Operand as MemberExpression).Member.DeclaringType;
@@ -139,6 +157,7 @@ namespace EOrm.Repositories.EF
             {
                 case TypeCode.Boolean:
                     return (bool)pair.Value ? "1" : "0";
+
                 case TypeCode.Byte:
                 case TypeCode.Decimal:
                 case TypeCode.Double:
@@ -151,13 +170,17 @@ namespace EOrm.Repositories.EF
                 case TypeCode.UInt64:
                 case TypeCode.Single:
                     return pair.Value.ToString();
+
                 case TypeCode.Char:
                 case TypeCode.DateTime:
                 case TypeCode.String:
                     return $"'{pair}'";
+
                 default:
                     return pair.Value.ToString();
             }
         }
+
+        #endregion Private Methods
     }
 }
