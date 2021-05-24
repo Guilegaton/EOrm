@@ -100,6 +100,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ADO\AdoRepository.cs" />
     <Compile Include="Repositories\ADO\AdoRepositoryDisconnectedAproach.cs" />
+    <Compile Include="Repositories\Dapper\DapperRepository.cs" />
     <Compile Include="Repositories\EF\EFRepository.cs" />
   </ItemGroup>
   <ItemGroup>

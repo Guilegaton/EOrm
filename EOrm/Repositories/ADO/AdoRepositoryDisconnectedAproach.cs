@@ -63,19 +63,14 @@ namespace EOrm.Repositories.ADO
             }
             var type = typeof(TModel);
 
-            if (_dataSet.Tables.Contains(type.Name))
-            {
-                _dataSet.Tables[type.Name].Clear();
-            }
-            else
+            if (!_dataSet.Tables.Contains(type.Name))
             {
                 _dataSet.Tables.Add(type.Name);
+                var selectAdapter = new SqlDataAdapter(CreateGetAllCommand(), _connection);
+                selectAdapter.SelectCommand.Transaction = transaction;
+
+                selectAdapter.Fill(_dataSet.Tables[type.Name]);
             }
-
-            var selectAdapter = new SqlDataAdapter(CreateGetAllCommand(), _connection);
-            selectAdapter.SelectCommand.Transaction = transaction;
-
-            selectAdapter.Fill(_dataSet.Tables[type.Name]);
 
             var dataSet = AddRow(model);
 
@@ -298,7 +293,9 @@ namespace EOrm.Repositories.ADO
                 var arr = dict.ToArray();
                 for (int i = 0; i < arr.Length; i++)
                 {
-                    var propName = ((arr[i].Key.Body as UnaryExpression).Operand as MemberExpression).Member.Name;
+                    Expression expression = arr[i].Key.Body as UnaryExpression;
+                    expression = expression ?? arr[i].Key.Body as MemberExpression;
+                    var propName = (expression as MemberExpression).Member.Name;
                     result.Append(propName);
                     result.Append("=");
                     result.Append(GetContentForPropValue(arr[i]));
@@ -321,7 +318,9 @@ namespace EOrm.Repositories.ADO
 
         private string GetContentForPropValue(KeyValuePair<Expression<Func<TModel, object>>, object> pair)
         {
-            var propType = ((pair.Key.Body as UnaryExpression).Operand as MemberExpression).Member.DeclaringType;
+            Expression expression = pair.Key.Body as UnaryExpression;
+            expression = expression ?? pair.Key.Body as MemberExpression;
+            var propType = ((PropertyInfo)(expression as MemberExpression).Member).PropertyType;
             var typeCode = Type.GetTypeCode(propType);
             switch (typeCode)
             {
@@ -342,7 +341,7 @@ namespace EOrm.Repositories.ADO
                 case TypeCode.Char:
                 case TypeCode.DateTime:
                 case TypeCode.String:
-                    return $"'{pair}'";
+                    return $"'{pair.Value}'";
                 default:
                     return pair.Value.ToString();
             }
