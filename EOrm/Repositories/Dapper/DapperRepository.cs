@@ -9,14 +9,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EOrm.Repositories.Dapper
 {
-    public class DapperRepository<TModel> : IRepository<TModel> where TModel : class, IEntity, new()
+    public class DapperRepository<TModel> : IRepository<TModel>, IDisposable where TModel : class, IEntity, new()
     {
-        public IDbConnection _connection { get; set; }
-        public IDbTransaction _transaction { get; private set; }
+        #region Public Constructors
 
         public DapperRepository(string connectionString)
         {
@@ -34,6 +32,17 @@ namespace EOrm.Repositories.Dapper
                 _connection.Close();
             }
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public IDbConnection _connection { get; set; }
+        public IDbTransaction _transaction { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         public void CommitChanges()
         {
@@ -76,6 +85,12 @@ namespace EOrm.Repositories.Dapper
             _transaction = null;
         }
 
+        public void Dispose()
+        {
+            _transaction.Rollback();
+            _connection.Close();
+        }
+
         public IEnumerable<TModel> GetAll()
         {
             var result = _connection.Query<TModel>(CreateGetAllCommand());
@@ -99,6 +114,10 @@ namespace EOrm.Repositories.Dapper
 
             _connection.Execute(model.GetUpdateCommand(), transaction: _transaction);
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private string CreateDeleteCommand(int id)
         {
@@ -187,6 +206,16 @@ namespace EOrm.Repositories.Dapper
             return result.ToString();
         }
 
+        private void CreateTransaction()
+        {
+            if (_connection.State != ConnectionState.Open)
+            {
+                _connection.Open();
+            }
+
+            _transaction = _connection.BeginTransaction();
+        }
+
         private string GetContentForPropValue(KeyValuePair<Expression<Func<TModel, object>>, object> pair)
         {
             var propType = ((pair.Key.Body as UnaryExpression).Operand as MemberExpression).Member.DeclaringType;
@@ -195,6 +224,7 @@ namespace EOrm.Repositories.Dapper
             {
                 case TypeCode.Boolean:
                     return (bool)pair.Value ? "1" : "0";
+
                 case TypeCode.Byte:
                 case TypeCode.Decimal:
                 case TypeCode.Double:
@@ -207,25 +237,16 @@ namespace EOrm.Repositories.Dapper
                 case TypeCode.UInt64:
                 case TypeCode.Single:
                     return pair.Value.ToString();
+
                 case TypeCode.Char:
                 case TypeCode.DateTime:
                 case TypeCode.String:
                     return $"'{pair}'";
+
                 default:
                     return pair.Value.ToString();
             }
         }
-
-        private void CreateTransaction()
-        {
-            if (_connection.State != ConnectionState.Open)
-            {
-                _connection.Open();
-            }
-
-            _transaction = _connection.BeginTransaction();
-        }
-
         private IEnumerable<TModel> ParseReader(SqlDataReader reader)
         {
             var result = new List<TModel>();
@@ -244,5 +265,7 @@ namespace EOrm.Repositories.Dapper
 
             return result;
         }
+
+        #endregion Private Methods
     }
 }
