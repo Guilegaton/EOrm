@@ -46,6 +46,8 @@ namespace EOrm.Repositories.ADO
         public void CommitChanges()
         {
             _transaction.Commit();
+            _transaction.Dispose();
+            _transaction = null;
         }
 
         public void Create(TModel model)
@@ -99,6 +101,7 @@ namespace EOrm.Repositories.ADO
         public void DiscardChandes()
         {
             _transaction.Rollback();
+            _transaction.Dispose();
             _transaction = null;
         }
 
