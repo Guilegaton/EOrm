@@ -285,10 +285,8 @@
           <Property Name="CustomerId" Type="Int32" Nullable="false" />
           <Property Name="RecipientId" Type="Int32" Nullable="false" />
           <Property Name="Destination" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Contact" Relationship="Self.fk_Cargo_Contact_CustomerId" FromRole="Cargo" ToRole="Contact" />
-          <NavigationProperty Name="Contact1" Relationship="Self.fk_Cargo_Contact_RecipientId" FromRole="Cargo" ToRole="Contact" />
-          <NavigationProperty Name="Route" Relationship="Self.fk_Cargo_Route_Destination" FromRole="Cargo" ToRole="Route" />
-          <NavigationProperty Name="Shipments" Relationship="Self.fk_Shipment_Cargo_CargoId" FromRole="Cargo" ToRole="Shipment" />
+          <NavigationProperty Name="Customer" Relationship="Self.fk_Cargo_Contact_CustomerId" FromRole="Cargo" ToRole="Contact" />
+          <NavigationProperty Name="Recipient" Relationship="Self.fk_Cargo_Contact_RecipientId" FromRole="Cargo" ToRole="Contact" />
         </EntityType>
         <EntityType Name="Contact">
           <Key>
@@ -298,8 +296,6 @@
           <Property Name="FirstName" Type="String" MaxLength="55" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="LastName" Type="String" MaxLength="55" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CellPhone" Type="String" MaxLength="12" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Cargoes" Relationship="Self.fk_Cargo_Contact_CustomerId" FromRole="Contact" ToRole="Cargo" />
-          <NavigationProperty Name="Cargoes1" Relationship="Self.fk_Cargo_Contact_RecipientId" FromRole="Contact" ToRole="Cargo" />
         </EntityType>
         <EntityType Name="Driver">
           <Key>
@@ -309,7 +305,6 @@
           <Property Name="FirstName" Type="String" MaxLength="24" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="LastName" Type="String" MaxLength="24" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Birthdate" Type="DateTime" Nullable="false" Precision="0" />
-          <NavigationProperty Name="Shipments" Relationship="Self.fk_Shipment_Driver_DriverId" FromRole="Driver" ToRole="Shipment" />
           <NavigationProperty Name="Trucks" Relationship="Self.TruckDriver" FromRole="Driver" ToRole="Truck" />
         </EntityType>
         <EntityType Name="Route">
@@ -321,10 +316,8 @@
           <Property Name="Distance" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="WharehouseStart" Type="Int32" Nullable="false" />
           <Property Name="WharehouseEnd" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Cargoes" Relationship="Self.fk_Cargo_Route_Destination" FromRole="Route" ToRole="Cargo" />
-          <NavigationProperty Name="Wharehouse" Relationship="Self.fk_Route_Wharehouse_WharehouseEnd" FromRole="Route" ToRole="Wharehouse" />
-          <NavigationProperty Name="Wharehouse1" Relationship="Self.fk_Route_Wharehouse_WharehouseStart" FromRole="Route" ToRole="Wharehouse" />
-          <NavigationProperty Name="Shipments" Relationship="Self.fk_Shipment_Route_RouteId" FromRole="Route" ToRole="Shipment" />
+          <NavigationProperty Name="EndPoint" Relationship="Self.fk_Route_Wharehouse_WharehouseEnd" FromRole="Route" ToRole="Wharehouse" />
+          <NavigationProperty Name="StartPoint" Relationship="Self.fk_Route_Wharehouse_WharehouseStart" FromRole="Route" ToRole="Wharehouse" />
         </EntityType>
         <EntityType Name="Shipment">
           <Key>
@@ -353,7 +346,6 @@
           <Property Name="Payload" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="FuelConsumption" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="Volume" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <NavigationProperty Name="Shipments" Relationship="Self.fk_Shipment_Truck_TruckId" FromRole="Truck" ToRole="Shipment" />
           <NavigationProperty Name="Drivers" Relationship="Self.TruckDriver" FromRole="Truck" ToRole="Driver" />
         </EntityType>
         <EntityType Name="Wharehouse">
@@ -363,8 +355,6 @@
           <Property Name="WharehouseId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="City" Type="String" MaxLength="155" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="State" Type="String" MaxLength="155" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Routes" Relationship="Self.fk_Route_Wharehouse_WharehouseEnd" FromRole="Wharehouse" ToRole="Route" />
-          <NavigationProperty Name="Routes1" Relationship="Self.fk_Route_Wharehouse_WharehouseStart" FromRole="Wharehouse" ToRole="Route" />
         </EntityType>
         <Association Name="fk_Cargo_Contact_CustomerId">
           <End Role="Contact" Type="Self.Contact" Multiplicity="1" />

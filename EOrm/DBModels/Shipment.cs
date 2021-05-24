@@ -13,7 +13,7 @@ namespace EOrm.DBModels
     using EOrm.Interfaces;
     using System;
     using System.Collections.Generic;
-    
+
     public partial class Shipment : IEntity
     {
         [PrimaryKey]
