@@ -25,6 +25,8 @@ namespace EOrm.Repositories.EF
         public void CommitChanges()
         {
             _transaction.Commit();
+            _transaction.Dispose();
+            _transaction = null;
         }
 
         public void Create(TModel model)
@@ -64,6 +66,8 @@ namespace EOrm.Repositories.EF
         public void DiscardChandes()
         {
             _transaction.Rollback();
+            _transaction.Dispose();
+            _transaction = null;
         }
 
         public IEnumerable<TModel> GetAll()
@@ -91,7 +95,7 @@ namespace EOrm.Repositories.EF
 
         private void CreateTransaction()
         {
-            _transaction = _context.Database .BeginTransaction();
+            _transaction = _context.Database.BeginTransaction();
         }
 
         private string CreateGetCommand(Dictionary<Expression<Func<TModel, object>>, object> dict)
