@@ -1,0 +1,4 @@
+ADO: 00:40:17.33
+ADO disc: 01:12:51.17
+EntityFramework: 04:17:35.05
+Dapeer: 00:35:58.25
